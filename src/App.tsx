@@ -12,50 +12,48 @@ function App() {
   const [currentGuess, setCurrentGuess] = useState<string>('');
   const [isGameOver, setIsGameOver] = useState<boolean>(false);
 
-  useEffect(
-    () => {
-      const handleType = (event: any) => {
-        if (isGameOver) {
+  useEffect(() => {
+    const handleType = (event: any) => {
+      if (isGameOver) {
+        return;
+      }
+
+      const key = event.key;
+
+      if (key === 'Enter') {
+        if (currentGuess.length !== 5) {
           return;
         }
 
-        const key = event.key;
+        const newGuesses = [...guesses];
+        newGuesses[guesses.findIndex(val => val == null)] = currentGuess;
+        setGuesses(newGuesses);
+        setCurrentGuess('');
 
-        if (key === 'Enter') {
-          if (currentGuess.length !== 5) {
-            return;
-          }
-
-          const newGuesses = [...guesses];
-          newGuesses[guesses.findIndex(val => val == null)] = currentGuess;
-          setGuesses(newGuesses);
-          setCurrentGuess('');
-
-          const isCorrect = solution === currentGuess;
-          if (isCorrect) {
-            setIsGameOver(true);
-          }
+        const isCorrect = solution === currentGuess;
+        if (isCorrect) {
+          setIsGameOver(true);
         }
+      }
 
-        if (key === 'Backspace') {
-          setCurrentGuess(currentGuess => currentGuess.slice(0, -1));
-          return;
-        }
+      if (key === 'Backspace') {
+        setCurrentGuess(currentGuess => currentGuess.slice(0, -1));
+        return;
+      }
 
-        if (currentGuess.length >= 5) {
-          return;
-        }
+      if (currentGuess.length >= 5) {
+        return;
+      }
 
+      if (event.key.match(/^[a-zA-Z]{1}$/) !== null) {
         setCurrentGuess(previousGuess => previousGuess + event.key);
-      };
+      }
+    };
 
-      window.addEventListener('keydown', handleType);
+    window.addEventListener('keydown', handleType);
 
-      return () => window.removeEventListener('keydown', handleType);
-    },
-    [currentGuess, isGameOver, solution],
-    guesses
-  );
+    return () => window.removeEventListener('keydown', handleType);
+  }, [currentGuess, isGameOver, solution]);
 
   // useEffect(() => {
   //   const fetchWord = async () => {
